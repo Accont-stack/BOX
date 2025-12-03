@@ -520,10 +520,14 @@ app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (
 
 
 // ===== STRIPE CHECKOUT =====
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 app.post('/api/checkout', authenticate, async (req, res) => {
   try {
+    if (!stripe) {
+      return res.status(500).json({ error: 'Stripe não configurado' });
+    }
+    
     const { plan } = req.body;
     
     // Obter usuário
