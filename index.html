@@ -89,7 +89,7 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <span id="commercialArea">
         <span id="demoBadge" class="badge-demo">DEMO</span>
-        <button id="buyBtn" onclick="openLink()">Comprar</button>
+        <button id="buyBtn" onclick="openCheckout('monthly')">Comprar</button>
         <span id="licenseRow">
           <input id="licenseKey" placeholder="Chave" />
           <button onclick="activateLicense()">Ativar</button>
@@ -248,6 +248,9 @@
 
 <script src="app.js"></script>
 <script src="ai-assistant.js"></script>
+
+<!-- Stripe.js para pagamentos -->
+<script src="https://js.stripe.com/v3/"></script>
 
 <!-- ✅ Registrar Service Worker para PWA -->
 <script>
