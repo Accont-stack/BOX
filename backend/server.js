@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { createClient } from '@supabase/supabase-js';
+import Stripe from 'stripe';
 
 dotenv.config();
 
@@ -514,6 +515,58 @@ app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (
     res.json({ received: true });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+
+// ===== STRIPE CHECKOUT =====
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+app.post('/api/checkout', authenticate, async (req, res) => {
+  try {
+    const { plan } = req.body;
+    
+    // Obter usuário
+    const { data: user } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', req.userId)
+      .single();
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    // IDs dos produtos Stripe (você precisa atualizar com seus IDs reais)
+    const priceIds = {
+      monthly: process.env.STRIPE_PRICE_MONTHLY || 'price_1Sa74IAxkPjZykOAqT8xY5Zq',
+      annual: process.env.STRIPE_PRICE_ANNUAL || 'price_1Sa74IAxkPjZykOAqT8xY5Zq'
+    };
+    
+    const priceId = priceIds[plan] || priceIds.monthly;
+    
+    // Criar sessão Stripe
+    const session = await stripe.checkout.sessions.create({
+      customer_email: user.email,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1
+        }
+      ],
+      mode: 'subscription',
+      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/index.html?success=true`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/index.html?canceled=true`,
+      metadata: {
+        userId: req.userId
+      }
+    });
+    
+    res.json({ sessionId: session.id });
+  } catch (error) {
+    console.error('Erro checkout:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
