@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
 
 dotenv.config();
 
@@ -520,11 +519,10 @@ app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (
 
 
 // ===== STRIPE CHECKOUT =====
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
-
+// Usando requisição HTTP direta para Stripe (sem npm package)
 app.post('/api/checkout', authenticate, async (req, res) => {
   try {
-    if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
       return res.status(500).json({ error: 'Stripe não configurado' });
     }
     
@@ -541,32 +539,42 @@ app.post('/api/checkout', authenticate, async (req, res) => {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
     
-    // IDs dos produtos Stripe (você precisa atualizar com seus IDs reais)
+    // Criar sessão Stripe via API REST
     const priceIds = {
-      monthly: process.env.STRIPE_PRICE_MONTHLY || 'price_1Sa74IAxkPjZykOAqT8xY5Zq',
-      annual: process.env.STRIPE_PRICE_ANNUAL || 'price_1Sa74IAxkPjZykOAqT8xY5Zq'
+      monthly: process.env.STRIPE_PRICE_MONTHLY || 'price_test_monthly',
+      annual: process.env.STRIPE_PRICE_ANNUAL || 'price_test_annual'
     };
     
     const priceId = priceIds[plan] || priceIds.monthly;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     
-    // Criar sessão Stripe
-    const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1
-        }
-      ],
-      mode: 'subscription',
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/index.html?success=true`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/index.html?canceled=true`,
-      metadata: {
-        userId: req.userId
-      }
+    // FormData para Stripe API
+    const params = new URLSearchParams();
+    params.append('customer_email', user.email);
+    params.append('payment_method_types[]', 'card');
+    params.append('line_items[0][price]', priceId);
+    params.append('line_items[0][quantity]', '1');
+    params.append('mode', 'subscription');
+    params.append('success_url', `${frontendUrl}/index.html?success=true`);
+    params.append('cancel_url', `${frontendUrl}/index.html?canceled=true`);
+    params.append('metadata[userId]', req.userId);
+    
+    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: params.toString()
     });
     
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('Stripe error:', error);
+      return res.status(response.status).json({ error: 'Erro ao criar sessão Stripe' });
+    }
+    
+    const session = await response.json();
     res.json({ sessionId: session.id });
   } catch (error) {
     console.error('Erro checkout:', error);
