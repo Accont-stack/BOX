@@ -1,0 +1,33 @@
+{
+  "name": "the-box-backend",
+  "version": "1.0.0",
+  "description": "THE BOX - Backend API para Gestão Financeira com IA",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "build": "echo 'Backend build complete'",
+    "test": "jest"
+  },
+  "keywords": ["finance", "pwa", "api", "nodejs"],
+  "author": "Accont-stack",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.1.2",
+    "bcryptjs": "^2.4.3",
+    "express-rate-limit": "^7.1.5",
+    "@supabase/supabase-js": "^2.38.4",
+    "stripe": "^14.7.0",
+    "@sendgrid/mail": "^8.1.0",
+    "zod": "^3.22.4",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  }
+}
