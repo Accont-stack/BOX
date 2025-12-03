@@ -1,0 +1,47 @@
+{
+  "name": "THE BOX — Gestão Financeira",
+  "short_name": "THE BOX",
+  "description": "App de gestão financeira com IA e análise de despesas",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#000000",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a1a' width='192' height='192'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%23ff6b35' text-anchor='middle' dominant-baseline='central'>📦</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%231a1a1a' width='512' height='512'/><text x='50%' y='50%' font-size='300' font-weight='bold' fill='%23ff6b35' text-anchor='middle' dominant-baseline='central'>📦</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a1a' width='192' height='192'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%23ff6b35' text-anchor='middle' dominant-baseline='central'>📦</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%231a1a1a' width='540' height='720'/><text x='50%' y='50%' font-size='100' fill='%23ff6b35' text-anchor='middle'>THE BOX</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect fill='%231a1a1a' width='1280' height='720'/><text x='50%' y='50%' font-size='100' fill='%23ff6b35' text-anchor='middle'>THE BOX</text></svg>",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "prefer_related_applications": false
+}
